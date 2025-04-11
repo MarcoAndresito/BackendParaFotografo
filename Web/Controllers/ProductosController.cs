@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Web.Models;
 
 namespace Web.Controllers
 {
@@ -90,14 +91,5 @@ namespace Web.Controllers
 
             return NoContent();
         }
-    }
-
-    // Clase modelo para el producto
-    public class Producto
-    {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        public decimal Precio { get; set; }
-        public int Stock { get; set; }
     }
 }
