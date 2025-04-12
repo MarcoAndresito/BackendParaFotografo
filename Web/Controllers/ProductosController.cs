@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Web.Data;
 using Web.Models;
 
 namespace Web.Controllers
@@ -9,26 +12,26 @@ namespace Web.Controllers
     [Route("api/[controller]")]
     public class ProductosController : ControllerBase
     {
-        // Lista en memoria para simular una base de datos
-        private static List<Producto> Productos = new List<Producto>
+        private readonly ApplicationDbContext _context;
+
+        public ProductosController(ApplicationDbContext context)
         {
-            new Producto { Id = 1, Nombre = "Laptop", Precio = 1200.50m, Stock = 15 },
-            new Producto { Id = 2, Nombre = "Mouse", Precio = 25.99m, Stock = 50 },
-            new Producto { Id = 3, Nombre = "Teclado", Precio = 45.75m, Stock = 30 }
-        };
+            _context = context;
+        }
 
         // GET: api/productos
         [HttpGet]
-        public ActionResult<IEnumerable<Producto>> Get()
+        public async Task<ActionResult<IEnumerable<Producto>>> GetAllAsync()
         {
-            return Ok(Productos);
+            var resultado = await _context.Productos.ToListAsync();
+            return Ok(resultado);
         }
 
         // GET api/productos/5
         [HttpGet("{id}")]
-        public ActionResult<Producto> Get(int id)
+        public async Task<ActionResult<Producto>> GetByIdAsync(int id)
         {
-            var producto = Productos.FirstOrDefault(p => p.Id == id);
+            var producto = await _context.Productos.FirstOrDefaultAsync(p => p.Id == id);
 
             if (producto == null)
             {
@@ -40,7 +43,7 @@ namespace Web.Controllers
 
         // POST api/productos
         [HttpPost]
-        public ActionResult<Producto> Post([FromBody] Producto nuevoProducto)
+        public async Task<ActionResult<Producto>> PostAsync([FromBody] Producto nuevoProducto)
         {
             // Validación simple
             if (string.IsNullOrEmpty(nuevoProducto.Nombre))
@@ -48,20 +51,18 @@ namespace Web.Controllers
                 return BadRequest("El nombre del producto es requerido");
             }
 
-            // Generar un nuevo ID
-            var nuevoId = Productos.Max(p => p.Id) + 1;
-            nuevoProducto.Id = nuevoId;
+            await _context.Productos.AddAsync(nuevoProducto);
 
-            Productos.Add(nuevoProducto);
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Get), new { id = nuevoId }, nuevoProducto);
+            return Ok(nuevoProducto);
         }
 
         // PUT api/productos/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Producto productoActualizado)
+        public async Task<IActionResult> Put(int id, [FromBody] Producto productoActualizado)
         {
-            var productoExistente = Productos.FirstOrDefault(p => p.Id == id);
+            var productoExistente = await _context.Productos.FirstOrDefaultAsync(p => p.Id == id);
 
             if (productoExistente == null)
             {
@@ -70,26 +71,31 @@ namespace Web.Controllers
 
             // Actualizar propiedades
             productoExistente.Nombre = productoActualizado.Nombre;
+            productoExistente.Marca = productoActualizado.Marca;
             productoExistente.Precio = productoActualizado.Precio;
             productoExistente.Stock = productoActualizado.Stock;
 
-            return NoContent();
+            await _context.SaveChangesAsync();
+
+            return Ok(productoExistente);
         }
 
         // DELETE api/productos/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            var producto = Productos.FirstOrDefault(p => p.Id == id);
+            var producto = await _context.Productos.FirstOrDefaultAsync(p => p.Id == id);
 
             if (producto == null)
             {
                 return NotFound();
             }
 
-            Productos.Remove(producto);
+            _context.Productos.Remove(producto);
 
-            return NoContent();
+            await _context.SaveChangesAsync();
+
+            return Ok("eliminado correctamente");
         }
     }
 }

@@ -16,6 +16,10 @@ namespace Web.Data
             modelBuilder.Entity<Producto>(producto =>
             {
                 producto
+                .Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+
+                producto
                 .HasKey((p) => p.Id);
 
                 producto
