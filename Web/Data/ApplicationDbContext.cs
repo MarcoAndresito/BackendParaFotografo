@@ -10,6 +10,7 @@ namespace Web.Data
         }
 
         public DbSet<Producto> Productos { get; set; }
+        public DbSet<RegistroUsuario> RegistroUsuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +32,31 @@ namespace Web.Data
                 .Property((p) => p.Precio)
                 .IsRequired()
                 .HasPrecision(9, 2);
+            });
+
+            modelBuilder.Entity<RegistroUsuario>(registroUsuario =>
+            {
+                registroUsuario
+                .Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+
+                registroUsuario
+                .HasKey((ru) => ru.Id);
+
+                registroUsuario
+                .Property((ru) => ru.Nombre)
+                .IsRequired()
+                .HasMaxLength(50);
+
+                registroUsuario
+                .Property((ru) => ru.Correo)
+                .IsRequired()
+                .HasMaxLength(100);
+
+                registroUsuario
+                .Property((ru) => ru.Contraseña)
+                .IsRequired()
+                .HasMaxLength(100);
             });
         }
     }
