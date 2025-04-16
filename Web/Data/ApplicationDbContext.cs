@@ -11,6 +11,7 @@ namespace Web.Data
 
         public DbSet<Producto> Productos { get; set; }
         public DbSet<RegistroUsuario> RegistroUsuarios { get; set; }
+        public DbSet<ExportarAlbum> Exportaciones { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +59,15 @@ namespace Web.Data
                 .IsRequired()
                 .HasMaxLength(100);
             });
+
+            modelBuilder.Entity<ExportarAlbum>(exportar =>
+            {
+                exportar.HasKey(e => e.Id);
+                exportar.Property(e => e.NombreArchivo).IsRequired().HasMaxLength(100);
+                exportar.Property(e => e.Formato).IsRequired().HasMaxLength(10);
+                exportar.Property(e => e.EnlaceDescarga).HasMaxLength(255);
+            });
+
         }
     }
 }
