@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Web.Models;
-
+using Web.Data;
 namespace Web.Data
 {
     public class ApplicationDbContext : DbContext
