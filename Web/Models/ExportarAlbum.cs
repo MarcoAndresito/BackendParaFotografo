@@ -1,10 +1,13 @@
 ﻿//YANILA SOLIZ DURAN
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Web.Models
 {
     public class ExportarAlbum
     {
+        public int Id { get; set; }
+
         [Required]
         [MaxLength(100)]
         public string NombreArchivo { get; set; } = string.Empty;
