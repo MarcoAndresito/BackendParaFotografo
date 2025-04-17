@@ -33,24 +33,19 @@ namespace Web.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "RegistroUsuarios",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nombre = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Correo = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Contraseña = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RegistroUsuarios", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+
+
+            migrationBuilder.Sql(@"
+                 INSERT INTO Parametros (Servicio, Clave, Valor, Descripcion, Activo)
+                    VALUES 
+                ('Fotografia', 'resolucion_maxima', '6000x4000', 'Resolución máxima permitida para fotos', 1),
+                ('Fotografia', 'formato_default', 'JPEG', 'Formato predeterminado de entrega de fotos', 1),
+                ('Galeria', 'max_fotos_por_album', '50', 'Número máximo de fotos por álbum', 1),
+                ('Galeria', 'orden_predeterminado', 'fecha_desc', 'Orden predeterminado para mostrar fotos', 1),
+                ('Sistema', 'idioma', 'es-BO', 'Idioma predeterminado del sistema', 1),
+                ('Sistema', 'zona_horaria', 'America/La_Paz', 'Zona horaria local', 1);
+            ");
+
         }
 
         /// <inheritdoc />
