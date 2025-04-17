@@ -5,11 +5,11 @@ namespace Web.Models
 {
     public class ExportarAlbum
     {
-       
+        [Required]
         [MaxLength(100)]
         public string NombreArchivo { get; set; } = string.Empty;
 
-       
+        [Required]
         [MaxLength(10)]
         public string Formato { get; set; } = "JPG";
 
