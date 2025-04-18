@@ -15,6 +15,7 @@ namespace Web.Data
         public DbSet<Foto> Fotos { get; set; }
         public DbSet<Album> Albumes { get; set; }
         public DbSet<ExportarAlbum> Exportaciones { get; set; }
+        public DbSet<Parametro> Parametros { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -150,6 +151,31 @@ namespace Web.Data
                     .WithOne(f => f.Album)
                     .HasForeignKey(f => f.AlbumId)
                     .OnDelete(DeleteBehavior.Cascade); 
+            });
+            modelBuilder.Entity<Parametro>(param =>
+            {
+                param.HasKey(p => p.Id);
+
+                param.Property(p => p.Id)
+                     .ValueGeneratedOnAdd();
+
+                param.Property(p => p.Servicio)
+                     .IsRequired()
+                     .HasMaxLength(100);
+
+                param.Property(p => p.Clave)
+                     .IsRequired()
+                     .HasMaxLength(100);
+
+                param.Property(p => p.Valor)
+                     .IsRequired()
+                     .HasMaxLength(200);
+
+                param.Property(p => p.Descripcion)
+                     .HasMaxLength(300);
+
+                param.Property(p => p.Activo)
+                     .IsRequired();
             });
             modelBuilder.Entity<Comentario>(comentario =>
             {
