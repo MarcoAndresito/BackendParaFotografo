@@ -11,6 +11,7 @@ namespace Web.Data
 
         public DbSet<Producto> Productos { get; set; }
         public DbSet<RegistroUsuario> RegistroUsuarios { get; set; }
+        public DbSet<RegistroUsuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
