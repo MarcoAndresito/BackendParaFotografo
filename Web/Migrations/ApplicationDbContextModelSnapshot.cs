@@ -22,6 +22,37 @@ namespace Web.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("Web.Models.Album", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("varchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Albumes");
+                });
+
             modelBuilder.Entity("Web.Models.Comentario", b =>
                 {
                     b.Property<int>("Id")
@@ -55,7 +86,7 @@ namespace Web.Migrations
                     b.ToTable("Comentarios");
                 });
 
-            modelBuilder.Entity("Web.Models.Album", b =>
+            modelBuilder.Entity("Web.Models.ExportarAlbum", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,27 +94,27 @@ namespace Web.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("EnlaceDescarga")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime>("FechaCreacion")
+                    b.Property<DateTime>("FechaExportacion")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Formato")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<string>("NombreArchivo")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("UsuarioId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Albumes");
+                    b.ToTable("Exportaciones");
                 });
 
             modelBuilder.Entity("Web.Models.Foto", b =>
@@ -134,37 +165,6 @@ namespace Web.Migrations
                     b.HasIndex("AlbumId");
 
                     b.ToTable("Fotos");
-                });
-
-            modelBuilder.Entity("Web.Models.ExportarAlbum", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("EnlaceDescarga")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("FechaExportacion")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Formato")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("NombreArchivo")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Exportaciones");
                 });
 
             modelBuilder.Entity("Web.Models.Parametro", b =>
@@ -258,6 +258,22 @@ namespace Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RegistroUsuarios");
+                });
+
+            modelBuilder.Entity("Web.Models.Foto", b =>
+                {
+                    b.HasOne("Web.Models.Album", "Album")
+                        .WithMany("Fotos")
+                        .HasForeignKey("AlbumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Album");
+                });
+
+            modelBuilder.Entity("Web.Models.Album", b =>
+                {
+                    b.Navigation("Fotos");
                 });
 #pragma warning restore 612, 618
         }
