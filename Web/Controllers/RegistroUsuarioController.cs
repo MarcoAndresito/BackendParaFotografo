@@ -35,7 +35,7 @@ namespace Web.Controllers
 
             return Ok(new
             {
-                mensaje = "Usuario creado correctamente",
+                mensaje = "Usuario creado",
                 usuario = nuevoRegistroUsuario
             });
         }
