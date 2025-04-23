@@ -12,10 +12,12 @@ namespace Web.Data
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<RegistroUsuario> RegistroUsuarios { get; set; }
+        public DbSet<RegistroUsuario> Usuarios { get; set; }
         public DbSet<Foto> Fotos { get; set; }
         public DbSet<Album> Albumes { get; set; }
         public DbSet<ExportarAlbum> Exportaciones { get; set; }
         public DbSet<Parametro> Parametros { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
