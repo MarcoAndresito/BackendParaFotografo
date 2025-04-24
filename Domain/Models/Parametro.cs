@@ -1,5 +1,5 @@
 ﻿
-namespace Web.Models
+namespace Domain.Models
 {
     public class Parametro
     {

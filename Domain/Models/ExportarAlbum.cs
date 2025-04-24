@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.Models
+namespace Domain.Models
 {
     public class ExportarAlbum
     {
