@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.Models { 
+namespace Domain.Models
+{ 
     public class Foto
     {
         public int Id { get; set; }
