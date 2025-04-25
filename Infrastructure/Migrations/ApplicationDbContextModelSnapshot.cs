@@ -86,37 +86,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Comentarios");
                 });
 
-            modelBuilder.Entity("Domain.Models.ExportarAlbum", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("EnlaceDescarga")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("FechaExportacion")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Formato")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("NombreArchivo")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Exportaciones");
-                });
-
             modelBuilder.Entity("Domain.Models.Foto", b =>
                 {
                     b.Property<int>("Id")

@@ -1,137 +1,80 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Web.Data;
-using Web.Models;
+﻿using Aplication;
+using Domain.DTOs;
+using Domain.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Web.Controllers
-{ 
+namespace Web.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
-public class AlbumesController : ControllerBase
+public class AlbumesController(IAlbumesServices albumesServices) : ControllerBase
 {
-    private readonly ApplicationDbContext _context; // Inyección del contexto de la base de datos
-
-    public AlbumesController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
 
     // GET: api/Albumes
     [HttpGet]
-    public ActionResult<IEnumerable<Album>> GetAlbumes()
+    public async Task<ActionResult<IEnumerable<Album>>> GetAllAsync()
     {
-        return _context.Albumes.ToList();
+        var resultado = await albumesServices.GetAllAsync();
+        return Ok(resultado);
     }
 
     // GET: api/Albumes/{id}
     [HttpGet("{id}")]
-    public ActionResult<Album> GetAlbum(int id)
+    public async Task<ActionResult<Album>> GetByIdAsync(int id)
     {
-        var album = _context.Albumes.Find(id);
-
+        var album = await albumesServices.GetByIdAsync(id);
         if (album == null)
         {
             return NotFound();
         }
-
-        return album;
+        return Ok(album);
     }
 
     // POST: api/Albumes
     [HttpPost]
-    public ActionResult<Album> PostAlbum(Album album)
+    public async Task<ActionResult<Album>> SaveAsync(Album album)
     {
-        _context.Albumes.Add(album);
-        _context.SaveChanges();
-
-        return CreatedAtAction(nameof(GetAlbum), new { id = album.Id }, album);
+        var albumCreated = await albumesServices.SaveAsync(album);
+        return Ok(albumCreated);
     }
 
     // PUT: api/Albumes/{id}
     [HttpPut("{id}")]
-    public IActionResult PutAlbum(int id, Album album)
+    public async Task<ActionResult<Album>> UpdateAsync(int id, Album album)
     {
-        if (id != album.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(album).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
-        try
-        {
-            _context.SaveChanges();
-        }
-        catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
-        {
-            if (!AlbumExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
+        var albunEdited = await albumesServices.UpdateAsync(album);
+        return Ok(albunEdited);
     }
 
     // DELETE: api/Albumes/{id}
     [HttpDelete("{id}")]
-    public IActionResult DeleteAlbum(int id)
+    public async Task<ActionResult<string>> DeleteAsync(int id)
     {
-        var album = _context.Albumes.Find(id);
-        if (album == null)
-        {
-            return NotFound();
-        }
-
-        _context.Albumes.Remove(album);
-        _context.SaveChanges();
-
-        return NoContent();
-    }
-
-    private bool AlbumExists(int id)
-    {
-        return _context.Albumes.Any(e => e.Id == id);
+        await albumesServices.DeleteAsync(id);
+        return Ok("eliminado correctamente");
     }
 
     // GET: api/Albumes/{albumId}/Fotos
     [HttpGet("{albumId}/Fotos")]
-    public ActionResult<IEnumerable<Foto>> GetFotosPorAlbum(int albumId)
+    public async Task<ActionResult<IEnumerable<Foto>>> GetFotosPorAlbumAsync(int albumId)
     {
-        var album = _context.Albumes.Find(albumId);
-
-        if (album == null)
-        {
-            return NotFound();
-        }
-
-        var fotos = _context.Fotos.Where(f => f.AlbumId == albumId).ToList();
-        return fotos;
+        var resultasdo = await albumesServices.GetFotosPorAlbumAsync(albumId);
+        return Ok(resultasdo);
     }
 
     // POST: api/Albumes/{albumId}/Fotos
     [HttpPost("{albumId}/Fotos")]
-    public ActionResult<Foto> PostFotoEnAlbum(int albumId, Foto foto)
+    public async Task<ActionResult<Foto>> PostFotoEnAlbumAsync(int albumId, Foto foto)
     {
-        var album = _context.Albumes.Find(albumId);
-
-        if (album == null)
-        {
-            return NotFound();
-        }
-
-        foto.AlbumId = albumId; // Aseguramos que la foto pertenezca al álbum correcto
-        _context.Fotos.Add(foto);
-        _context.SaveChanges();
-
-        return CreatedAtAction("GetFoto", "Fotos", new { id = foto.Id }, foto);
+        var resultasdo = await albumesServices.PostFotoEnAlbumAsync(albumId, foto);
+        return Ok(resultasdo);
     }
-}
+
+    // POST: api/Albumes/{albumId}/Exportar
+    [HttpPost("{albumId}/Exportar")]
+    public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(int albumId, ExportarAlbumRequest request)
+    {
+        var resultasdo = await albumesServices.ExportarAsync(albumId, request);
+        return Ok(resultasdo);
+    }
 }

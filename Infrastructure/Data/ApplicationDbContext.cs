@@ -12,10 +12,8 @@ namespace Infrastructure.Data
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<RegistroUsuario> RegistroUsuarios { get; set; }
-        //public DbSet<RegistroUsuario> Usuarios { get; set; }
         public DbSet<Foto> Fotos { get; set; }
         public DbSet<Album> Albumes { get; set; }
-        public DbSet<ExportarAlbum> Exportaciones { get; set; }
         public DbSet<Parametro> Parametros { get; set; }
 
 
@@ -208,14 +206,6 @@ namespace Infrastructure.Data
 
                 comentario
                     .HasIndex(c => c.FechaCreacion);
-            });
-
-            modelBuilder.Entity<ExportarAlbum>(exportar =>
-            {
-                exportar.HasKey(e => e.Id);
-                exportar.Property(e => e.NombreArchivo).IsRequired().HasMaxLength(100);
-                exportar.Property(e => e.Formato).IsRequired().HasMaxLength(10);
-                exportar.Property(e => e.EnlaceDescarga).HasMaxLength(255);
             });
 
         }
