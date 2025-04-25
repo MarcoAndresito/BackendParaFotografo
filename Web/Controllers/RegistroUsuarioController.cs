@@ -1,43 +1,30 @@
+using Aplication;
+using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Web.Data;
-using Web.Models;
 
-namespace Web.Controllers
+namespace Web.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class RegistroUsuarioController(IUsuarioServices usuarioServices) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class RegistroUsuarioController : ControllerBase
+
+    // POST api/registrousuario
+    [HttpPost]
+    public async Task<ActionResult<RegistroUsuario>> PostAsync([FromBody] RegistroUsuario nuevoRegistroUsuario)
     {
-        private readonly ApplicationDbContext _context;
-
-        public RegistroUsuarioController(ApplicationDbContext context)
+        // Validación de los datos de entrada 
+        if (string.IsNullOrEmpty(nuevoRegistroUsuario.Nombre) || string.IsNullOrEmpty(nuevoRegistroUsuario.Correo) || string.IsNullOrEmpty(nuevoRegistroUsuario.Contraseña))
         {
-            _context = context;
+            return BadRequest("El nombre, correo y contraseña son requeridos");
         }
 
-        // POST api/registrousuario
-        [HttpPost]
-        public async Task<ActionResult<RegistroUsuario>> PostAsync([FromBody] RegistroUsuario nuevoRegistroUsuario)
+        var usuario = await usuarioServices.RegistaraUsuarioAsync(nuevoRegistroUsuario);
+
+        return Ok(new
         {
-            // Validación de los datos de entrada 
-            if (string.IsNullOrEmpty(nuevoRegistroUsuario.Nombre) || string.IsNullOrEmpty(nuevoRegistroUsuario.Correo) || string.IsNullOrEmpty(nuevoRegistroUsuario.Contraseña))
-            {
-                return BadRequest("El nombre, correo y contraseña son requeridos");
-            }
-
-            await _context.RegistroUsuarios.AddAsync(nuevoRegistroUsuario);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                mensaje = "Usuario creado",
-                usuario = nuevoRegistroUsuario
-            });
-        }
+            mensaje = "Usuario creado",
+            usuario = usuario
+        });
     }
 }
