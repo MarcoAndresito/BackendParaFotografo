@@ -21,7 +21,10 @@ public class AlbumesServices(ApplicationDbContext context) : IAlbumesServices
         var album = await context.Albumes.Include(a => a.Fotos).FirstOrDefaultAsync(a => a.Id == albumId)?? throw new Exception("Álbum no encontrado");
 
         // Obtén la lista de las fotos asociadas al álbum.
+        var fotos = album.Fotos.ToList();
+
         // Comprime cada una de las fotos de la lista.
+       
         // Retorna un archivo comprimido con todas las fotos.
         throw new NotImplementedException();
     }
