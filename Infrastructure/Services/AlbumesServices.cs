@@ -18,6 +18,8 @@ public class AlbumesServices(ApplicationDbContext context) : IAlbumesServices
     public async Task<ExportarAlbumResponce> ExportarAsync(int albumId, ExportarAlbumRequest request)
     {
         // Con el ID, busca el álbum en la base de datos.
+        var album = await context.Albumes.Include(a => a.Fotos).FirstOrDefaultAsync(a => a.Id == albumId)?? throw new Exception("Álbum no encontrado");
+
         // Obtén la lista de las fotos asociadas al álbum.
         // Comprime cada una de las fotos de la lista.
         // Retorna un archivo comprimido con todas las fotos.
