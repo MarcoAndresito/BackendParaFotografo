@@ -32,7 +32,7 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
 
     // POST: api/Albumes
     [HttpPost]
-    public async Task<ActionResult<Album>> SaveAsync(Album album)
+    public async Task<ActionResult<AlbumSaveResponse>> SaveAsync(AlbumSaveRequest album)
     {
         var albumCreated = await albumesServices.SaveAsync(album);
         return Ok(albumCreated);
@@ -64,15 +64,15 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
 
     // POST: api/Albumes/{albumId}/Fotos
     [HttpPost("{albumId}/Fotos")]
-    public async Task<ActionResult<Foto>> PostFotoEnAlbumAsync(int albumId, Foto foto)
+    public async Task<ActionResult<Foto>> PostFotoEnAlbumAsync(int albumId, IFormFile imageFile)
     {
-        var resultasdo = await albumesServices.PostFotoEnAlbumAsync(albumId, foto);
+        var resultasdo = await albumesServices.PostFotoEnAlbumAsync(albumId, new FotoUploadRequest());
         return Ok(resultasdo);
     }
 
     // POST: api/Albumes/{albumId}/Exportar
     [HttpPost("{albumId}/Exportar")]
-    public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(int albumId, ExportarAlbumRequest request)
+    public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(int albumId, [FromBody] ExportarAlbumRequest request)
     {
         var resultasdo = await albumesServices.ExportarAsync(albumId, request);
         return Ok(resultasdo);

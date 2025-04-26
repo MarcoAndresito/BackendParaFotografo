@@ -30,13 +30,28 @@ namespace Web.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistroUsuario model)
         {
-
+            if (string.IsNullOrEmpty(model.Nombre) || string.IsNullOrEmpty(model.Correo) || string.IsNullOrEmpty(model.Contraseña))
+            {
+                return BadRequest("El nombre, correo y contraseña son requeridos");
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var resutl = usuarioServices.RegistaraUsuarioAsync(model);
-            return Ok(resutl);
+            try
+            {
+                var usuario = await usuarioServices.RegistaraUsuarioAsync(model);
+                return Ok(new
+                {
+                    mensaje = "Usuario creado",
+                    usuario = usuario,
+                });
+            }
+            catch (Exception e)
+            {
+                //return Conflict(e);
+                return BadRequest(e);
+            }
         }
 
         [Authorize]

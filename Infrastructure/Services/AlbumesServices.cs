@@ -42,20 +42,27 @@ public class AlbumesServices(ApplicationDbContext context) : IAlbumesServices
         return fotos;
     }
 
-    public async Task<Foto> PostFotoEnAlbumAsync(int albumId, Foto foto)
+    public async Task<Foto> PostFotoEnAlbumAsync(int albumId, FotoUploadRequest foto)
     {
-        var album = await context.Albumes.FindAsync(albumId) ?? throw new Exception("album no encontrado");
-        foto.AlbumId = album.Id;
-        context.Fotos.Add(foto);
-        context.SaveChanges();
-        return foto;
+        throw new NotImplementedException();
     }
 
-    public async Task<Album> SaveAsync(Album album)
+    public async Task<AlbumSaveResponse> SaveAsync(AlbumSaveRequest request)
     {
+        Album album = new Album()
+        {
+            Nombre = request.Nombre,
+            Descripcion = request.Descripcion,
+            FechaCreacion = request.FechaCreacion,
+            UsuarioId = request.UsuarioId,
+        };
         context.Albumes.Add(album);
         await context.SaveChangesAsync();
-        return album;
+        return new AlbumSaveResponse()
+        {
+            mensage = "Album creado correctamente",
+            album = album,
+        };
     }
 
     public async Task<Album> UpdateAsync(Album album)
