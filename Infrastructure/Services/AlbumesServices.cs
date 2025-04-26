@@ -24,7 +24,8 @@ public class AlbumesServices(ApplicationDbContext context) : IAlbumesServices
         var fotos = album.Fotos.ToList();
 
         // Comprime cada una de las fotos de la lista.
-       
+        var zipPath = Path.Combine("Exports", $"Album_{albumId}.zip");
+        Directory.CreateDirectory("Exports");
         // Retorna un archivo comprimido con todas las fotos.
         throw new NotImplementedException();
     }
