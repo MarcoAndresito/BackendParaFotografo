@@ -2,6 +2,7 @@
 using Domain.DTOs;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 using System.Net.WebSockets;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -74,9 +75,11 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
 
     // GET: api/Albumes/{albumId}/Exportar
     [HttpGet("{albumId}/Exportar")]
-    public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(int albumId, [FromBody] ExportarAlbumRequest request)
+    public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(string albumId, [FromBody] ExportarAlbumRequest request)
     {
         string ruta = @"C:\upc-album";
+        string rutaCarpeta = Path.Combine(ruta, albumId);
+        string rutaZip = Path.Combine(Path.GetTempPath(), albumId + ".zip"); // Guarda en una carpeta temporal
 
         try
         {
@@ -86,7 +89,9 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
             if (directorios.Length == 0)
                 return NotFound(new { mensaje = $"No se encontró ninguna carpeta con el nombre '{albumId}'" });
 
-            return Ok(new { directorios });
+            ZipFile.CreateFromDirectory(rutaCarpeta, rutaZip);
+            var bytes = System.IO.File.ReadAllBytes(rutaZip);
+            return File(bytes, "application/zip", albumId + ".zip");
         }
         catch (Exception ex)
         {
