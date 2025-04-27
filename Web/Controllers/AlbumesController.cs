@@ -75,27 +75,39 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
 
     // GET: api/Albumes/{albumId}/Exportar
     [HttpGet("{albumId}/Exportar")]
-    public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(string albumId, [FromBody] ExportarAlbumRequest request)
+    public async Task<ActionResult> ExportarAsync(string albumId)
     {
-        string ruta = @"C:\upc-album";
-        string rutaCarpeta = Path.Combine(ruta, albumId);
-        string rutaZip = Path.Combine(Path.GetTempPath(), albumId + ".zip"); // Guarda en una carpeta temporal
+        string rutaBase = @"C:\upc-album";
+        string rutaCarpeta = Path.Combine(rutaBase, albumId);
+
+        // Generar nombre único con fecha y hora
+        string fechaHora = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string nombreZip = $"{albumId}_{fechaHora}.zip";
+        string rutaZip = Path.Combine(Path.GetTempPath(), nombreZip);
 
         try
         {
-            // Buscar carpeta específica dentro de C: que coincida con el nombre
-            string[] directorios = Directory.GetDirectories(ruta, "*" + albumId + "*", SearchOption.AllDirectories);
+            if (!Directory.Exists(rutaCarpeta))
+                return NotFound(new { mensaje = $"No se encontró la carpeta '{albumId}'" });
 
-            if (directorios.Length == 0)
-                return NotFound(new { mensaje = $"No se encontró ninguna carpeta con el nombre '{albumId}'" });
+            // Comprimir la carpeta en un archivo único de manera asíncrona
+            await Task.Run(() => ZipFile.CreateFromDirectory(rutaCarpeta, rutaZip));
 
-            ZipFile.CreateFromDirectory(rutaCarpeta, rutaZip);
-            var bytes = System.IO.File.ReadAllBytes(rutaZip);
-            return File(bytes, "application/zip", albumId + ".zip");
+            // Leer el archivo ZIP y devolverlo como respuesta
+            var bytes = await System.IO.File.ReadAllBytesAsync(rutaZip);
+            return File(bytes, "application/zip", nombreZip);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return StatusCode(403, new { mensaje = "No tienes permisos para acceder a esta carpeta" });
+        }
+        catch (IOException ex)
+        {
+            return StatusCode(500, new { mensaje = "Error de entrada/salida al comprimir la carpeta", error = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { mensaje = "Error al buscar directorios", error = ex.Message });
+            return StatusCode(500, new { mensaje = "Error inesperado al comprimir la carpeta", error = ex.Message });
         }
     }
 }
