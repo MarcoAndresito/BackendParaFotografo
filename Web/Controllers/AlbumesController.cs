@@ -2,6 +2,8 @@
 using Domain.DTOs;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.WebSockets;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Web.Controllers;
 
@@ -70,11 +72,25 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
         return Ok(resultasdo);
     }
 
-    // POST: api/Albumes/{albumId}/Exportar
-    [HttpPost("{albumId}/Exportar")]
+    // GET: api/Albumes/{albumId}/Exportar
+    [HttpGet("{albumId}/Exportar")]
     public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(int albumId, [FromBody] ExportarAlbumRequest request)
     {
-        var resultasdo = await albumesServices.ExportarAsync(albumId, request);
-        return Ok(resultasdo);
+        string ruta = @"C:\upc-album";
+
+        try
+        {
+            // Buscar carpeta específica dentro de C: que coincida con el nombre
+            string[] directorios = Directory.GetDirectories(ruta, "*" + albumId + "*", SearchOption.AllDirectories);
+
+            if (directorios.Length == 0)
+                return NotFound(new { mensaje = $"No se encontró ninguna carpeta con el nombre '{albumId}'" });
+
+            return Ok(new { directorios });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { mensaje = "Error al buscar directorios", error = ex.Message });
+        }
     }
 }
