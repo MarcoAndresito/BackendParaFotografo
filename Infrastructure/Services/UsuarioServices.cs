@@ -48,7 +48,7 @@ public class UsuarioServices(ApplicationDbContext context) : IUsuarioServices
 
     public async Task<RegistroUsuario?> ValidarUsuarioAsync(LoginRequest request)
     {
-        var usuario = await context.RegistroUsuarios.FirstOrDefaultAsync(u => u.Nombre == request.usuario && u.Contraseña == request.contraseña);
+        var usuario = await context.RegistroUsuarios.FirstOrDefaultAsync(u => u.Nombre == request.email && u.Contraseña == request.password);
         return usuario;
     }
 }
