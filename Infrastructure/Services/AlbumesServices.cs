@@ -28,11 +28,11 @@ public class AlbumesServices(ApplicationDbContext context) : IAlbumesServices
         Directory.CreateDirectory("Exports");
 
         // Retorna un archivo comprimido con todas las fotos.
-        return new ExportarAlbumResponce
-        {
-            FilePath = zipPath,
-            Message = "Álbum exportado exitosamente."
-        };
+        //return new ExportarAlbumResponce
+        //{
+        //    FilePath = zipPath,
+        //    Message = "Álbum exportado exitosamente."
+        //};
 
         throw new NotImplementedException();
 
