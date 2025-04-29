@@ -5,7 +5,7 @@ namespace Aplication;
 
 public interface IUsuarioServices
 {
-    Task<RegistroUsuario> ValidarUsuarioAsync(LoginRequest request);
-    Task<LoginResponce> GenerarTokenAsync(RegistroUsuario usuario, string key);
+    Task<RegistroUsuario?> ValidarUsuarioAsync(LoginRequest request);
+    LoginResponce GenerarToken(RegistroUsuario usuario, string secretKey);
     Task<RegistroUsuario> RegistaraUsuarioAsync(RegistroUsuario model);
 }
