@@ -5,6 +5,7 @@ using System.Text;
 using Infrastructure.Data;
 using Aplication;
 using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>EntityEntryGraphIterator status
 {
     options.AddDefaultPolicy(builder =>
     {
