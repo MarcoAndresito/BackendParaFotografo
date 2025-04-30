@@ -5,6 +5,7 @@ using System.Text;
 using Infrastructure.Data;
 using Aplication;
 using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 builder.Services.AddScoped<IAlbumesServices, AlbumesServices>();
+
+builder.Services.AddScoped<IComentariosServices, ComentariosServices>();
+
 builder.Services.AddScoped<IEncriptacionService, EncriptacionService>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -39,7 +44,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>EntityEntryGraphIterator status
 {
     options.AddDefaultPolicy(builder =>
     {

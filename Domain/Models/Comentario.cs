@@ -20,7 +20,11 @@ namespace Domain.Models
 
         // Puede ser null si el comentario es anónimo
         public string? UsuarioId { get; set; }
+
+        // CREANDO NUEVA PROPIEDAD PARA LA RELACIÓN CON LA FOTO
+        [Required]
+        public int FotoId { get; set; }
+
         public Comentario() { }
     }
 }
-
