@@ -44,7 +44,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
-builder.Services.AddCors(options =>EntityEntryGraphIterator status
+builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
@@ -53,6 +53,7 @@ builder.Services.AddCors(options =>EntityEntryGraphIterator status
                .AllowAnyMethod();
     });
 });
+
 
 var app = builder.Build();
 
