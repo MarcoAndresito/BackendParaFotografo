@@ -10,8 +10,10 @@ using System.Text;
 
 namespace Infrastructure.Services;
 
-public class UsuarioServices(ApplicationDbContext context) : IUsuarioServices
+public class UsuarioServices(ApplicationDbContext context, IEncriptacionService encriptacionService) : IUsuarioServices
 {
+    private readonly ApplicationDbContext _context = context; 
+    private readonly IEncriptacionService _encriptacionService = encriptacionService;
     public LoginResponce GenerarToken(RegistroUsuario usuario, string secretKey)
     {
         var claims = new List<Claim>
@@ -41,6 +43,8 @@ public class UsuarioServices(ApplicationDbContext context) : IUsuarioServices
         {
             throw new Exception("El correo electrónico ya está registrado.");
         }
+        
+        nuevoRegistroUsuario.Contraseña = _encriptacionService.HashPassword(nuevoRegistroUsuario.Contraseña);
         await context.RegistroUsuarios.AddAsync(nuevoRegistroUsuario);
         await context.SaveChangesAsync();
         return nuevoRegistroUsuario;
@@ -48,7 +52,13 @@ public class UsuarioServices(ApplicationDbContext context) : IUsuarioServices
 
     public async Task<RegistroUsuario?> ValidarUsuarioAsync(LoginRequest request)
     {
-        var usuario = await context.RegistroUsuarios.FirstOrDefaultAsync(u => u.Nombre == request.usuario && u.Contraseña == request.contraseña);
-        return usuario;
+        var usuario = await context.RegistroUsuarios.FirstOrDefaultAsync(u => u.Correo == request.Correo);
+
+        if (usuario != null && encriptacionService.VerifyPassword(request.Contraseña, usuario.Contraseña))
+        {
+            return usuario;
+        }
+
+        return null;
     }
 }

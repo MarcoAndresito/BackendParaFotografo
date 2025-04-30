@@ -2,6 +2,9 @@
 using Domain.DTOs;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
+using System.Net.WebSockets;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Web.Controllers;
 
@@ -66,15 +69,29 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
     [HttpPost("{albumId}/Fotos")]
     public async Task<ActionResult<Foto>> PostFotoEnAlbumAsync(int albumId, IFormFile imageFile)
     {
-        var resultasdo = await albumesServices.PostFotoEnAlbumAsync(albumId, new FotoUploadRequest());
+        if (imageFile == null || imageFile.Length == 0)
+            return BadRequest("No se proporcionó ninguna imagen.");
+        FotoUploadRequest request = new()
+        {
+            FileName = imageFile.FileName,
+            ContentType = imageFile.ContentType
+
+        };
+        using (var memoryStream = new MemoryStream())
+        {
+            await imageFile.CopyToAsync(memoryStream);
+            request.imageBytes = memoryStream.ToArray();
+        }
+
+        var resultasdo = await albumesServices.PostFotoEnAlbumAsync(albumId, request);
         return Ok(resultasdo);
     }
 
-    // POST: api/Albumes/{albumId}/Exportar
-    [HttpPost("{albumId}/Exportar")]
-    public async Task<ActionResult<ExportarAlbumResponce>> ExportarAsync(int albumId, [FromBody] ExportarAlbumRequest request)
+    // GET: api/Albumes/{albumId}/Exportar
+    [HttpGet("{albumId}/Exportar")]
+    public async Task<IActionResult> ExportarAsync(int albumId)
     {
-        var resultasdo = await albumesServices.ExportarAsync(albumId, request);
-        return Ok(resultasdo);
+        var resultado = await albumesServices.ExportarAsync(albumId);
+        return File(resultado.Contenido, "application/zip", resultado.NombreArchivo);
     }
 }

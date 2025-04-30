@@ -2,5 +2,7 @@
 
 public class FotoUploadRequest
 {
-    public string foto { get; set; }
+    public byte[] imageBytes { get; set; }
+    public string FileName { get; set; }
+    public string ContentType { get; set; }
 }
