@@ -11,7 +11,7 @@ public interface IAlbumesServices
     Task<IEnumerable<Album>> GetAllAsync();
     Task<Album> GetByIdAsync(int id);
     Task<IEnumerable<Foto>> GetFotosPorAlbumAsync(int albumId);
-    Task<Foto> PostFotoEnAlbumAsync(int albumId, FotoUploadRequest foto);
+    Task<Foto> PostFotoEnAlbumAsync(int albumId, FotoUploadRequest request);
     Task<AlbumSaveResponse> SaveAsync(AlbumSaveRequest album);
     Task<Album> UpdateAsync(Album album);
 }
