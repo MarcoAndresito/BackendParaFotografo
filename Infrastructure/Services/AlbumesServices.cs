@@ -3,6 +3,7 @@ using Domain.DTOs;
 using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.IO.Compression;
 
 namespace Infrastructure.Services;
 
@@ -15,27 +16,37 @@ public class AlbumesServices(ApplicationDbContext context) : IAlbumesServices
         await context.SaveChangesAsync();
     }
 
-    public async Task<ExportarAlbumResponce> ExportarAsync(int albumId, ExportarAlbumRequest request)
+    public async Task<ExportarAlbumResponce> ExportarAsync(int albumId)
     {
-        // Con el ID, busca el álbum en la base de datos.
-        var album = await context.Albumes.Include(a => a.Fotos).FirstOrDefaultAsync(a => a.Id == albumId)?? throw new Exception("Álbum no encontrado");
+        var album = await context.Albumes
+       .Include(a => a.Fotos)
+       .FirstOrDefaultAsync(a => a.Id == albumId)
+       ?? throw new Exception("Álbum no encontrado");
 
-        // Obtén la lista de las fotos asociadas al álbum.
         var fotos = album.Fotos.ToList();
 
-        // Comprime cada una de las fotos de la lista.
-        var zipPath = Path.Combine("Exports", $"Album_{albumId}.zip");
-        Directory.CreateDirectory("Exports");
+        using var memoriaZip = new MemoryStream();
+        using (var zip = new ZipArchive(memoriaZip, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            foreach (var foto in fotos)
+            {
+                // Suponiendo que cada foto tiene propiedades: NombreArchivo (string) y Contenido (byte[])
+                var entry = zip.CreateEntry(foto.FileName);
 
-        // Retorna un archivo comprimido con todas las fotos.
-        //return new ExportarAlbumResponce
-        //{
-        //    FilePath = zipPath,
-        //    Message = "Álbum exportado exitosamente."
-        //};
+                using var entryStream = entry.Open();
+                using var fotoStream = new MemoryStream(foto.imageBytes);
+                await fotoStream.CopyToAsync(entryStream);
+            }
+        }
 
-        throw new NotImplementedException();
+        memoriaZip.Seek(0, SeekOrigin.Begin);
 
+        string album_zip = $"album_{album.Id}_{DateTime.Now:yyyyMMddHHmmss}.zip";
+        return new ExportarAlbumResponce
+        {
+            NombreArchivo = album_zip,
+            Contenido = memoriaZip.ToArray()
+        };
     }
 
     public async Task<IEnumerable<Album>> GetAllAsync()
