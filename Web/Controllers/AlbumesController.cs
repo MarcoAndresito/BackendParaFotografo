@@ -89,39 +89,9 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
 
     // GET: api/Albumes/{albumId}/Exportar
     [HttpGet("{albumId}/Exportar")]
-    public async Task<ActionResult> ExportarAsync(string albumId)
+    public async Task<IActionResult> ExportarAsync(int albumId)
     {
-        string rutaBase = @"C:\upc-album";
-        string rutaCarpeta = Path.Combine(rutaBase, albumId);
-
-        // Generar nombre único con fecha y hora
-        string fechaHora = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        string nombreZip = $"{albumId}_{fechaHora}.zip";
-        string rutaZip = Path.Combine(Path.GetTempPath(), nombreZip);
-
-        try
-        {
-            if (!Directory.Exists(rutaCarpeta))
-                return NotFound(new { mensaje = $"No se encontró la carpeta '{albumId}'" });
-
-            // Comprimir la carpeta en un archivo único de manera asíncrona
-            await Task.Run(() => ZipFile.CreateFromDirectory(rutaCarpeta, rutaZip));
-
-            // Leer el archivo ZIP y devolverlo como respuesta
-            var bytes = await System.IO.File.ReadAllBytesAsync(rutaZip);
-            return File(bytes, "application/zip", nombreZip);
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return StatusCode(403, new { mensaje = "No tienes permisos para acceder a esta carpeta" });
-        }
-        catch (IOException ex)
-        {
-            return StatusCode(500, new { mensaje = "Error de entrada/salida al comprimir la carpeta", error = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { mensaje = "Error inesperado al comprimir la carpeta", error = ex.Message });
-        }
+        var resultado = await albumesServices.ExportarAsync(albumId);
+        return File(resultado.Contenido, "application/zip", resultado.NombreArchivo);
     }
 }
