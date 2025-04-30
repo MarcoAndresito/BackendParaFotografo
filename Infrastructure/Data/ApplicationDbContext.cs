@@ -84,35 +84,11 @@ namespace Infrastructure.Data
                     .HasForeignKey(f => f.AlbumId)
                     .OnDelete(DeleteBehavior.Cascade); 
 
-                foto
-                    .Property(f => f.NombreArchivo)
-                    .IsRequired()
-                    .HasMaxLength(255);
 
-                foto
-                    .Property(f => f.Url)
-                    .IsRequired()
-                    .HasMaxLength(2048);
 
-                foto
-                    .Property(f => f.Formato)
-                    .HasMaxLength(10);
 
-                foto
-                    .Property(f => f.PesoKB)
-                    .IsRequired();
 
-                foto
-                    .Property(f => f.AnchoPx)
-                    .IsRequired();
 
-                foto
-                    .Property(f => f.AltoPx)
-                    .IsRequired();
-
-                foto
-                    .Property(f => f.PublicId)
-                    .HasMaxLength(255);
 
                 foto
                     .Property(f => f.FechaSubida)
