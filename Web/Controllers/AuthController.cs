@@ -22,8 +22,8 @@ namespace Web.Controllers
             {
                 return Unauthorized("contraeñas imvalidad");
             }
-            var key = configuration["Jwt:Key"] ?? throw new Exception("falta configurar la llave en el appseting");
-            var token = await usuarioServices.GenerarTokenAsync(usuario, key);
+            var key = configuration["Jwt:Key"] ?? throw new Exception();
+            var token = usuarioServices.GenerarToken(usuario, key);
             return Ok(token);
         }
 

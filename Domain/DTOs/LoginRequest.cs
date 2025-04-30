@@ -2,6 +2,6 @@
 
 public class LoginRequest
 {
-    string usuario {  get; set; }
-    string contraseña { get; set; }
+    public string email { get; set; }
+    public string password { get; set; }
 }

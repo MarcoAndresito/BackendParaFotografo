@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Domain.Models;
 using Aplication;
+using Domain.DTOs;
 
 namespace Web.Controllers;
 
@@ -51,9 +52,13 @@ public class ProductosController(IProductoService productoService) : ControllerB
 
     // DELETE api/productos/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public async Task<ActionResult<ProductosDeleteResponse>> DeleteAsync(int id)
     {
         await productoService.DeleteAsync(id);
-        return Ok("eliminado correctamente");
+        var result = new ProductosDeleteResponse()
+        {
+            Mensaje = "eliminado correctamente"
+        };
+        return Ok(result);
     }
 }
