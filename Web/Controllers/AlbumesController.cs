@@ -69,7 +69,21 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
     [HttpPost("{albumId}/Fotos")]
     public async Task<ActionResult<Foto>> PostFotoEnAlbumAsync(int albumId, IFormFile imageFile)
     {
-        var resultasdo = await albumesServices.PostFotoEnAlbumAsync(albumId, new FotoUploadRequest());
+        if (imageFile == null || imageFile.Length == 0)
+            return BadRequest("No se proporcionó ninguna imagen.");
+        FotoUploadRequest request = new()
+        {
+            FileName = imageFile.FileName,
+            ContentType = imageFile.ContentType
+
+        };
+        using (var memoryStream = new MemoryStream())
+        {
+            await imageFile.CopyToAsync(memoryStream);
+            request.imageBytes = memoryStream.ToArray();
+        }
+
+        var resultasdo = await albumesServices.PostFotoEnAlbumAsync(albumId, request);
         return Ok(resultasdo);
     }
 

@@ -56,9 +56,19 @@ public class AlbumesServices(ApplicationDbContext context) : IAlbumesServices
         return fotos;
     }
 
-    public async Task<Foto> PostFotoEnAlbumAsync(int albumId, FotoUploadRequest foto)
+    public async Task<Foto> PostFotoEnAlbumAsync(int albumId, FotoUploadRequest request)
     {
-        throw new NotImplementedException();
+        Foto nuevaFoto = new()
+        {
+            imageBytes = request.imageBytes,
+            FileName = request.FileName,
+            ContentType = request.ContentType,
+            FechaSubida = DateTime.Now,
+            AlbumId = albumId,
+        };
+        context.Fotos.Add(nuevaFoto);
+        await context.SaveChangesAsync();
+        return nuevaFoto;
     }
 
     public async Task<AlbumSaveResponse> SaveAsync(AlbumSaveRequest request)
