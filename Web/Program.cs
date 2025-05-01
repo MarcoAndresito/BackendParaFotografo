@@ -5,7 +5,11 @@ using System.Text;
 using Infrastructure.Data;
 using Aplication;
 using Infrastructure.Services;
+<<<<<<< HEAD
 using Web.Services;
+=======
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+>>>>>>> c08a2ce37a955dec23d010ab8f2f8b6bd23622d0
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,11 @@ builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 builder.Services.AddScoped<IAlbumesServices, AlbumesServices>();
 builder.Services.AddScoped<UploadService>();
+
+
+builder.Services.AddScoped<IComentariosServices, ComentariosServices>();
+
+builder.Services.AddScoped<IEncriptacionService, EncriptacionService>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -50,6 +59,7 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod();
     });
 });
+
 
 var app = builder.Build();
 
