@@ -22,11 +22,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 builder.Services.AddScoped<IAlbumesServices, AlbumesServices>();
+
 // Registra UploadService correctamente, pasando el entorno
 builder.Services.AddScoped<UploadService>(); // Esto es lo que necesitas
 
 // Registra el servicio IEncriptacionService
-builder.Services.AddScoped<IEncriptacionService, EncriptacionService>(); // Asegúrate de que EncriptacionService exista
+builder.Services.AddScoped<IEncriptacionService, EncriptacionService>(); // AsegÃºrate de que EncriptacionService exista
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -47,11 +49,12 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("http://localhost:5173") // Asegúrate de que esto coincida con el puerto de tu frontend
+        builder.WithOrigins("http://localhost:5173") // AsegÃºrate de que esto coincida con el puerto de tu frontend
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
+  
 
 var app = builder.Build();
 
@@ -62,9 +65,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(); // Asegúrate de que esto esté presente y coincida con el nombre de la política
+
+app.UseCors();
+
 //app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseStaticFiles(); // Para servir imÃ¡genes desde wwwroot
+
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
