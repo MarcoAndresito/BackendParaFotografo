@@ -1,55 +1,57 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
+
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Web.Services; // Asegúrate que esté correctamente referenciado
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.Text;
+using System.Text.Json;
+using Domain.DTOs;
+using Web.Services;
 
-[ApiController]
-[Route("api/upload")]
-[EnableCors("AllowMyOrigin")]
-public class UploadController : ControllerBase
+namespace TuNombreDeProyecto.Controllers
 {
-    private readonly UploadService _uploadService;
-
-    public UploadController(UploadService uploadService)
+    [ApiController]
+    [Route("api/upload")]
+    [EnableCors("AllowMyOrigin")]
+    public class UploadController : ControllerBase
     {
-        _uploadService = uploadService;
-    }
+        private readonly UploadService _uploadService;
+        private readonly IWebHostEnvironment _environment;
 
-    [HttpPost("uploadFoto")]
-    public async Task<IActionResult> UploadFotos([FromForm] List<IFormFile> imageFile)
-    {
-        if (imageFile == null || imageFile.Count == 0)
+        public UploadController(UploadService uploadService, IWebHostEnvironment environment)
         {
-            return BadRequest("No se proporcionaron imágenes.");
+            _uploadService = uploadService;
+            _environment = environment;
         }
 
-        try
+        [HttpPost("uploadFoto")]
+        public async Task<IActionResult> UploadFoto([FromForm] List<IFormFile> imageFile)
         {
-            var imageUrls = new List<string>();
-
-            foreach (var file in imageFile)
+            if (imageFile == null || imageFile.Count == 0)
             {
-                var imageUrl = await _uploadService.SaveImageAndGetUrl(file);
-                imageUrls.Add(imageUrl);
+                return BadRequest("No se proporcionaron imágenes.");
             }
 
-            return Ok(imageUrls); // Devuelve un array con URLs
+            try
+            {
+                var imageUrls = new List<string>();
+                foreach (var file in imageFile)
+                {
+                    var imageUrl = await _uploadService.SaveImageAndGetUrl(file);
+                    imageUrls.Add(imageUrl);
+                }
+                return Ok(new { images = imageUrls, message = "Imágenes subidas correctamente" }); // Devuelve un objeto con un array
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Error al subir imágenes: {ex.Message}");
-        }
-    }
-
-    [HttpGet("images")]
-    public IActionResult GetImages()
-    {
-        var imageUrls = _uploadService.GetAllImageUrls();
-        return Ok(imageUrls);
     }
 }
+
 
 

@@ -5,32 +5,29 @@ using System.Text;
 using Infrastructure.Data;
 using Aplication;
 using Infrastructure.Services;
-
 using Web.Services;
-
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 29))));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 29))));
 
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 builder.Services.AddScoped<IAlbumesServices, AlbumesServices>();
-builder.Services.AddScoped<UploadService>();
 
+// Registra UploadService correctamente, pasando el entorno
+builder.Services.AddScoped<UploadService>(); // Esto es lo que necesitas
 
-builder.Services.AddScoped<IComentariosServices, ComentariosServices>();
-
-builder.Services.AddScoped<IEncriptacionService, EncriptacionService>();
+// Registra el servicio IEncriptacionService
+builder.Services.AddScoped<IEncriptacionService, EncriptacionService>(); // Asegúrate de que EncriptacionService exista
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -48,17 +45,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+        builder.WithOrigins("http://localhost:5173") // Asegúrate de que esto coincida con el puerto de tu frontend
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
-
+  
 
 var app = builder.Build();
 
@@ -69,18 +65,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors((config) =>
-{
-    config.AllowAnyOrigin();
-    config.AllowAnyHeader();
-    config.AllowAnyMethod();
-});
 
 app.UseCors();
+
 //app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseStaticFiles(); // Para servir im�genes desde wwwroot
+app.UseStaticFiles(); // Para servir imágenes desde wwwroot
 
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+
+
