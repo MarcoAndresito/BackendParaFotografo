@@ -59,10 +59,21 @@ public class AlbumesController(IAlbumesServices albumesServices) : ControllerBas
 
     // GET: api/Albumes/{albumId}/Fotos
     [HttpGet("{albumId}/Fotos")]
-    public async Task<ActionResult<IEnumerable<Foto>>> GetFotosPorAlbumAsync(int albumId)
+    public async Task<ActionResult<IEnumerable<ListaFotosResponce>>> GetFotosPorAlbumAsync(int albumId)
+
     {
-        var resultasdo = await albumesServices.GetFotosPorAlbumAsync(albumId);
-        return Ok(resultasdo);
+        var fotos = await albumesServices.GetFotosPorAlbumAsync(albumId);
+
+        var resultado = fotos.Select(f => new ListaFotosResponce()
+        {
+            id = f.Id,
+            nombreArchivo = f.FileName,
+            formato = f.ContentType,
+            fechaSubida = f.FechaSubida,
+            
+        });
+
+        return Ok(resultado);
     }
 
     // POST: api/Albumes/{albumId}/Fotos
