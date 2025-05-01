@@ -5,23 +5,28 @@ using System.Text;
 using Infrastructure.Data;
 using Aplication;
 using Infrastructure.Services;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 29))));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 29))));
 
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 builder.Services.AddScoped<IAlbumesServices, AlbumesServices>();
-builder.Services.AddScoped<IEncriptacionService, EncriptacionService>();
+// Registra UploadService correctamente, pasando el entorno
+builder.Services.AddScoped<UploadService>(); // Esto es lo que necesitas
+
+// Registra el servicio IEncriptacionService
+builder.Services.AddScoped<IEncriptacionService, EncriptacionService>(); // Asegúrate de que EncriptacionService exista
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -38,14 +43,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+        builder.WithOrigins("http://localhost:5173") // Asegúrate de que esto coincida con el puerto de tu frontend
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -58,16 +62,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors((config) =>
-{
-    config.AllowAnyOrigin();
-    config.AllowAnyHeader();
-    config.AllowAnyMethod();
-});
-
-app.UseCors();
-app.UseHttpsRedirection();
+app.UseCors(); // Asegúrate de que esto esté presente y coincida con el nombre de la política
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+
+
