@@ -5,6 +5,7 @@ using System.Text;
 using Infrastructure.Data;
 using Aplication;
 using Infrastructure.Services;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 builder.Services.AddScoped<IAlbumesServices, AlbumesServices>();
+builder.Services.AddScoped<UploadService>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -65,8 +68,10 @@ app.UseCors((config) =>
 });
 
 app.UseCors();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseStaticFiles(); // Para servir imágenes desde wwwroot
+
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
